@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% block blankpage %}
+
+	    <div class="slider-area">
+            	<!-- Slider -->
+    			<div class="block-slider block-slider4" width="50%" align="center">
+    				<ul class="" id="bxslider-home4">
+    					{% for image in product.images %}
+    						{% if image != "" %}
+	    					<li>
+	    						{% with 'files/'|add:image as image_static %}
+	    							<img src="{% static image_static %}" style="width:500px" alt="{{ product.name }}">
+	    						{% endwith %}
+	    					</li>
+	    					{% endif %}
+    					{% endfor %}
+    				</ul>
+			  		<div class="caption-group">
+					 	<h2 class="caption title">
+							<span class="primary"><strong>{{ product.name }}</strong></span>
+							<center id="ProductReview">
+								<i class="fa fa-star-o"></i>
+								<i class="fa fa-star-o"></i>
+								<i class="fa fa-star-o"></i>
+								<i class="fa fa-star-o"></i>
+								<i class="fa fa-star-o"></i>
+							</center>	    							
+						</h2>
+						<h4 class="caption subtitle">{{ product.categorie.name }}</h4>
+						<a class="caption button-radius" href="javascript:void(0)" onclick="c.addToCart('{% url 'addToCart' %}?id={{ product.id }}')" >
+							<span class="icon"></span>Add to cart now
+						</a>
+					</div>
+    			</div>
+    			<!-- ./Slider -->
+        </div> <!-- End slider area -->
+
+
+<div class="maincontent-area">
+    <div class="zigzag-bottom"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+
+				<div role="tabpanel">
+		            <ul class="product-tab" role="tablist" align="right">
+		                <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Description</a></li>
+		                <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Rate this product </a></li>
+		                <li role="presentation"><a href="#comments" aria-controls="comments" role="tab" data-toggle="tab">Comments </a></li>
+		            </ul>
+		            <div class="tab-content">
+		                <div role="tabpanel" class="tab-pane fade in active" id="home">
+		                    <h2>Product Description</h2>  
+		                    <p>
+		                    	{{ product.description }}
+		                    </p>
+		                </div>
+		                <div role="tabpanel" class="tab-pane fade" id="profile">
+		                    <h2>Rate this product</h2>
+		                    <div class="submit-review" align="center">
+								<fieldset class="rating" align="center">
+								    <input type="radio" onclick="p.setRatingValue('{% url 'ratingProduct' product.id 10 %}')" id="star5" name="rating" value="10" /><label class = "full" for="star5" title="Awesome - 5 stars"></label>
+								    <input type="radio" onclick="p.setRatingValue('{% url 'ratingProduct' product.id 9 %}')" id="star4half" name="rating" value="9" /><label class="half" for="star4half" title="Pretty good - 4.5 stars"></label>
+								    <input type="radio" onclick="p.setRatingValue('{% url 'ratingProduct' product.id 8 %}')" id="star4" name="rating" value="8" /><label class = "full" for="star4" title="Pretty good - 4 stars"></label>
+								    <input type="radio" onclick="p.setRatingValue('{% url 'ratingProduct' product.id 7 %}')" id="star3half" name="rating" value="7" /><label class="half" for="star3half" title="Meh - 3.5 stars"></label>
+								    <input type="radio" onclick="p.setRatingValue('{% url 'ratingProduct' product.id 6 %}')" id="star3" name="rating" value="6" /><label class = "full" for="star3" title="Meh - 3 stars"></label>
+								    <input type="radio" onclick="p.setRatingValue('{% url 'ratingProduct' product.id 5 %}')" id="star2half" name="rating" value="5" /><label class="half" for="star2half" title="Kinda bad - 2.5 stars"></label>
+								    <input type="radio" onclick="p.setRatingValue('{% url 'ratingProduct' product.id 4 %}')" id="star2" name="rating" value="4" /><label class = "full" for="star2" title="Kinda bad - 2 stars"></label>
+								    <input type="radio" onclick="p.setRatingValue('{% url 'ratingProduct' product.id 3 %}')" id="star1half" name="rating" value="3" /><label class="half" for="star1half" title="Meh - 1.5 stars"></label>
+								    <input type="radio" onclick="p.setRatingValue('{% url 'ratingProduct' product.id 2 %}')" id="star1" name="rating" value="2" /><label class = "full" for="star1" title="Sucks big time - 1 star"></label>
+								    <input type="radio" onclick="p.setRatingValue('{% url 'ratingProduct' product.id 1 %}')" id="starhalf" name="rating" value="1" /><label class="half" for="starhalf" title="Sucks big time - 0.5 stars"></label>
+								</fieldset>
+		                    </div>
+		                </div>
+		                <div role="tabpanel" class="tab-pane fade" id="comments">
+			                <div class="container">
+								<div class="row" style="display: none" id="example_comment">
+									<div class="col-sm-12">
+										<div class="row">
+											<div class="col-sm-1">
+												<div class="thumbnail">
+													<img class="img-responsive user-photo" src="{% static "img/avatar_2x.png" %}">
+												</div><!-- /thumbnail -->
+											</div><!-- /col-sm-1 -->
+											<div class="col-sm-8">
+												<div class="panel panel-default">
+													<div class="panel-heading">
+														<strong>username</strong> <span class="text-muted">date</span>
+													</div>
+													<div class="panel-body">
+														comment
+													</div><!-- /panel-body -->
+												</div><!-- /panel panel-default -->
+											</div><!-- /col-sm-5 -->
+										</div><!-- /col-sm-12 -->
+									</div><!-- /row -->
+								</div>
+								<div class="row">
+									<div class="col-sm-12">
+										<div class="row">
+											<div class="col-sm-9">
+												<div class="panel panel-default">
+													<div class="panel-heading">
+														<strong>{{ user.username }}</strong>
+													</div>
+													<div class="panel-body">
+														<textarea class="form-control" id="addComment" placeholder="Comment this product"></textarea>
+														<button onclick="p.comment()" class="btn btn-default">OK</button>
+													</div><!-- /panel-body -->
+												</div><!-- /panel panel-default -->
+											</div><!-- /col-sm-5 -->
+										</div>
+									</div>
+								</div>
+								<div class="row" id="allcomments"></div>
+								<div class="row">
+									<center>
+										<button id="comment_showmore" onclick="p.getCommentsProduct()" class="btn btn-default">Show more</button>
+									</center>
+								</div>
+			                </div>
+		                </div>
+		            </div>
+		        </div>
+		    </div>
+		</div>
+	</div>
+</div>
+
+
+{% endblock %}
+
+{% block onready %}
+	p.init({{ product.id }}, '{% url 'ProductReview' product.id %}', '{% url 'Comments' %}' );
+	p.getRatingForProduct();
+	p.getCommentsProduct();
+{% endblock %}
