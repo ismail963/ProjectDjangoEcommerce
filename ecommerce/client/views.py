@@ -142,6 +142,15 @@ def removeProduct(request):
 		product.save()
 	return HttpResponse("OK")
 
+@login_required(login_url='/connextion/')
+def updateProduct(request):
+	product = Product.objects.get(id=request.GET.get("id"))
+	if product.owner==request.user:
+		product.name=request.GET.get("name")
+		product.price=request.GET.get("price")
+		product.description=request.GET.get("description")
+		product.save()
+	return HttpResponse("OK")
 
 @login_required(login_url='/connextion/')
 def comments(request):

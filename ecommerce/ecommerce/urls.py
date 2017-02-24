@@ -30,6 +30,7 @@ urlpatterns = [
 	url(r'^product/list$', 'client.views.productsPage', name='products'),
 	url(r'^product/my$', 'client.views.myProductsPage', name='myProducts'),
 	url(r'^product/remove$', 'client.views.removeProduct', name='rmProduct'),
+	url(r'^product/modify$', 'client.views.updateProduct', name='modifyProduct'),
 
 	url(r'^cart/new', 'client.views.addToCart', name='addToCart'),
 	url(r'^cart/globalPrice', 'client.views.globalPrice', name='globalPrice'),

@@ -123,6 +123,7 @@ function Product(){
 					for(var i=0;i<obj.products.length;i++){
 						var div= document.getElementById("examble_product").innerHTML;
 						div=div.replace("product.id", obj.products[i].pk);
+						div=div.replace("product.id", obj.products[i].pk);
 						div=div.replace("product.name", obj.products[i].fields.name);
 						div=div.replace("product.price", obj.products[i].fields.price);
 						div=div.replace("product.img", encodeURI(obj.products[i].fields.images.split(";")[0]));
@@ -159,6 +160,45 @@ function Product(){
 				}		
 			});
 		}
+	};
+
+	this.showModifyProductModal= function(id){
+		this.id=id;
+		for(var i=0;i<this.products.length;i++){
+			if(this.products[i].pk==this.id){
+				document.getElementById("name").value=this.products[i].fields.name;
+				document.getElementById("price").value=this.products[i].fields.price;
+				document.getElementById("desc").value=this.products[i].fields.description;
+				$('#modifyProductModal').modal('show');
+				break;
+			}
+		}
+	};
+
+	this.modifyProduct=function(url) {
+		var name=document.getElementById("name").value;
+		var price= document.getElementById("price").value;
+		var desc=document.getElementById("desc").value;
+		var obj=this;
+		if(name.length>0 && desc.length>0 && price>0){
+			$('#modifyProductModal').modal('hide');
+			$.ajax({
+				url: ""+url,
+				data: "id="+this.id+"&name="+name+"&price="+price+"&description="+desc,
+				type: "GET",
+				success: function (my_text) {
+					obj.products_page=1;
+					obj.products=[];
+					document.getElementById("products").innerHTML="";
+					obj.getProducts();	
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) { 
+					alert("Status: " + textStatus+" Error: " + errorThrown); 
+				}		
+			});
+		}
+		else alert("Error: all fields are required !")
+
 	};
 
 	this.setRatingValue=function(url){
