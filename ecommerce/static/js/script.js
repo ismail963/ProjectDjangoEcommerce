@@ -5,6 +5,7 @@ function putMenuActive(){
 	if(url.indexOf("product/new")!=-1) menu[3].className="active";
 	else if(url.indexOf("product/my")!=-1) menu[2].className="active";
 	else if(url.indexOf("product/")!=-1) menu[1].className="active";
+	else if(url.indexOf("cart/")!=-1) menu[4].className="active";
 	else menu[0].className="active";
 }
 
@@ -12,6 +13,10 @@ function Cart(){
 
 	this.url_globalPrice="";
 	this.url_numberProduct="";
+	this.url_cart="";
+	this.url_rm_from_cart="";
+	this.url_update_cart="";
+	this.all_products=[];
 
 	this.init=function (a,b){
 		this.url_globalPrice=a;
@@ -48,9 +53,12 @@ function Cart(){
 			success: function (my_text) {
 				document.getElementById("cart_global_price").innerHTML="$"+my_text;
 				document.getElementById("cart_icon").className="fa fa-shopping-cart";
+				if(document.getElementById("cart.total")!=null){
+					document.getElementById("cart.total").innerHTML="$"+my_text;
+				}
 			},
 			error: function(XMLHttpRequest, textStatus, errorThrown) { 
-				alert("Status: " + textStatus+" Error: " + errorThrown); 
+				alert("Status: " + textStatus+" GobalPrice Error: " + errorThrown); 
 			}		
 		});
 	};
@@ -63,19 +71,105 @@ function Cart(){
 				document.getElementById("cart_number_product").innerHTML=my_text;
 			},
 			error: function(XMLHttpRequest, textStatus, errorThrown) { 
+				alert("Status: " + textStatus+" GobalNumber Error: " + errorThrown); 
+			}		
+		});
+	};
+
+	this.getCart = function (){
+		var obj=this;
+		var products= document.getElementById("products");
+		var plus= products.innerHTML;
+		$.ajax({
+			url: ""+this.url_cart,
+			type: "GET",
+			success: function (my_text) {		
+				obj.all_products= JSON.parse(my_text);
+				for(var i=0;i<obj.all_products.length;i++){
+					p.getProduct(obj.all_products[i].fields.product, obj.all_products[i]);
+				}
+				setTimeout(function(){
+					products.innerHTML="";
+					for(var i=0;i<c.all_products.length;i++){
+						var div= document.getElementById("example_product_tr").innerHTML;
+						div=div.replace(/cart.id/g, c.all_products[i].pk);
+						div=div.replace("product.id", c.all_products[i].fields.product);
+						div=div.replace("product.qty", c.all_products[i].fields.quantity);
+						div=div.replace("product.name", c.all_products[i].product.name);
+						div=div.replace("product.price", c.all_products[i].product.price);
+						div=div.replace("product.img", encodeURI(c.all_products[i].product.images.split(";")[0]));
+						div=div.replace("/product/0", "/product/"+c.all_products[i].fields.product);
+						div=div.replace("product.globalprice", (c.all_products[i].product.price*c.all_products[i].fields.quantity));
+						products.innerHTML+=div;
+					}
+					products.innerHTML+=plus;
+					document.getElementById("loading").style.display="none";
+				}, 2000);
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) { 
 				alert("Status: " + textStatus+" GobalPrice Error: " + errorThrown); 
 			}		
 		});
 	};
 
-}
+	this.removeProduct= function(tr, id){
+		$.ajax({
+			url: ""+this.url_rm_from_cart,
+			data: "id="+id,
+			type: "GET",
+			success: function (my_text) {
+				tr.remove();
+				c.getGobalPrice();
+				c.getGobalNumberProduct();
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) { 
+				alert("Status: " + textStatus+" GobalPrice Error: " + errorThrown); 
+			}		
+		});
+	};
 
+	this.updateCart= function(tr, id, value){
+		var tds=tr.getElementsByTagName("td");
+		if(!isNaN(value) && value>0){
+			$.ajax({
+				url: ""+this.url_update_cart,
+				data: "id="+id+"&quantity="+value,
+				type: "GET",
+				success: function (my_text) {
+					for(var i=0;i<c.all_products.length;i++){
+						if(id==c.all_products[i].pk){
+							c.all_products[i].fields.quantity=value;
+							tds[5].getElementsByTagName("span")[0].innerHTML="$"+(c.all_products[i].product.price*c.all_products[i].fields.quantity);
+							break;
+						}
+					}				
+					c.getGobalPrice();
+					c.getGobalNumberProduct();
+					tds[5].style.backgroundColor="lightblue";
+					setTimeout(function(){
+						tds[5].style.backgroundColor="##598de9";
+						setTimeout(function(){
+							tds[5].style.backgroundColor="white";
+						}, 100);
+					}, 200);
+					
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) { 
+					alert("Status: " + textStatus+" GobalPrice Error: " + errorThrown); 
+				}		
+			});
+		}
+		else alert("ERROR: value is an number > 0");
+	};
+
+}
 
 function Product(){
 	this.id;
 	this.url_rating;
 	this.url_comments;
 	this.url_products;
+	this.url_product;
 	this.rm_product;
 	this.all_comments=[];
 	this.products=[];
@@ -140,7 +234,7 @@ function Product(){
 				
 			},
 			error: function(XMLHttpRequest, textStatus, errorThrown) { 
-				alert("Status: " + textStatus+" Error: " + errorThrown); 
+				alert("Status: " + textStatus+" getProducts Error: " + errorThrown); 
 			}		
 		});	
 	};
@@ -287,6 +381,20 @@ function Product(){
 		}
 
 	};
+
+	this.getProduct= function (id, obj){
+		$.ajax({
+			url: ""+this.url_product,
+			data: "id="+id,
+			type: "GET",
+			success: function (my_text) {
+				obj.product=(JSON.parse(my_text))[0].fields;
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) { 
+				alert("Status: " + textStatus+" Error: " + errorThrown); 
+			}		
+		});		
+	}
 }
 
 var c=new Cart();

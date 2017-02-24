@@ -22,6 +22,7 @@ urlpatterns = [
 	url(r'^logout$', 'client.views.logoutFromSite', name='logoutFromSite'),
 
 	url(r'^product/new', 'client.views.addProduct', name='addProduct'),
+	url(r'^product/select', 'client.views.getProduct', name='getProduct'),
 	url(r'^product/(\d+)$', 'client.views.detailProduct' , name='detailProduct'),
 	url(r'^product/rating/(\d+)/(\d+)$', 'client.views.ratingProduct' , name='ratingProduct'),
 	url(r'^product/review/(\d+)$', 'client.views.productReview' , name='ProductReview'),
@@ -32,7 +33,11 @@ urlpatterns = [
 	url(r'^product/remove$', 'client.views.removeProduct', name='rmProduct'),
 	url(r'^product/modify$', 'client.views.updateProduct', name='modifyProduct'),
 
+	url(r'^cart/all', 'client.views.cartPage', name='cart'),
+	url(r'^cart/get', 'client.views.getCart', name='getterCart'),
 	url(r'^cart/new', 'client.views.addToCart', name='addToCart'),
+	url(r'^cart/remove', 'client.views.removeFromCart', name='rmFromCart'),
+	url(r'^cart/update', 'client.views.updateCart', name='updateCart'),
 	url(r'^cart/globalPrice', 'client.views.globalPrice', name='globalPrice'),
 	url(r'^cart/globalNumber', 'client.views.globalNumberProduct', name='globalNumberProduct'),
 

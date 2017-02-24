@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block blankpage %}
+<div class="maincontent-area">
+    <div class="zigzag-bottom"></div>
+    <div class="container">
+        <div class="row">
+                <div class="col-md-12">
+                    <div class="product-content-right">
+                        <div class="woocommerce">
+                            <form method="post" action="#">
+                                <table cellspacing="0" class="shop_table cart">
+                                    <thead>
+                                        <tr>
+                                            <th class="product-remove">&nbsp;</th>
+                                            <th class="product-thumbnail">&nbsp;</th>
+                                            <th class="product-name">Product</th>
+                                            <th class="product-price">Price</th>
+                                            <th class="product-quantity">Quantity</th>
+                                            <th class="product-subtotal">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="products">
+                                        <tr>
+                                            <td class="actions" colspan="6">
+                                                <div class="coupon">
+                                                    <label for="coupon_code">Coupon:</label>
+                                                    <input type="text" placeholder="Coupon code" value="" id="coupon_code" class="input-text" name="coupon_code">
+                                                    <input type="button" value="Apply Coupon" name="apply_coupon" class="btn btn-primary">
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </form>
+
+                            <div class="cart-collaterals">
+
+
+                            <div class="cart_totals ">
+                                <h2>Cart Totals</h2>
+                                <table cellspacing="0">
+                                    <tbody>
+                                        <tr class="shipping">
+                                            <th>Shipping and Handling</th>
+                                            <td>Free Shipping</td>
+                                        </tr>
+
+                                        <tr class="order-total">
+                                            <th>Order Total</th>
+                                            <td><strong><span class="amount" id="cart.total" >$00.00</span></strong> </td>
+                                        </tr>
+                                    </tbody>
+                                </table><br/>
+                                <input type="button" onclick="" value="Buy" class="btn btn-primary btn-lg" style="margin-left: 85%;">
+                            </div>
+                          </div>
+                        </div>                        
+                    </div>                    
+                </div>
+            </div>
+
+            <div class="row" style="margin-top: 25px">
+            	<table style="display:none">
+            		<thead id="example_product_tr">
+    				<tr class="cart_item">
+                        <td class="product-remove">
+                            <a title="Remove this item" onclick="c.removeProduct(this.parentElement.parentElement, cart.id)" class="remove" href="javascript:void(0)">×</a> 
+                        </td>
+
+                        <td class="product-thumbnail">
+                            <a href="single-product.html"><img width="145" height="145" alt="poster_1_up" class="shop_thumbnail" src="{% static 'files/'%}product.img"></a>
+                        </td>
+
+                        <td class="product-name">
+                            <a href="{% url 'detailProduct' 0 %}" target="_blank">product.name</a> 
+                        </td>
+
+                        <td class="product-price">
+                            <span class="amount">$product.price</span> 
+                        </td>
+
+                        <td class="product-quantity">
+                            <div class="quantity buttons_added">
+                                <input type="number" size="4" onchange="c.updateCart(this.parentElement.parentElement.parentElement, cart.id, this.value)" 
+                                		class="input-text qty text" title="Qty" value="product.qty" min="1" step="1">
+                            </div>
+                        </td>
+
+                        <td class="product-subtotal">
+                            <span class="amount">$product.globalprice</span> 
+                        </td>
+                    </tr>
+                    </thead>
+            	</table>
+	            <div class="col-md-12">
+	                <center>
+	                	<img  src="{% static 'img/loading.gif' %}" id="loading" width="300px" />
+	                </center>
+	            </div>
+        	</div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block onready %}
+    p.url_product='{% url 'getProduct' %}';
+    c.url_cart='{% url 'getterCart' %}';
+    c.url_rm_from_cart='{% url 'rmFromCart' %}';
+	c.url_update_cart='{% url 'updateCart' %}';
+    c.getCart();
+{% endblock %}

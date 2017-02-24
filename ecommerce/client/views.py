@@ -82,6 +82,12 @@ def detailProduct(request, id):
 	return render(request, "detailProduct.html", { "product" : product, "buyedBy" : buyed_by })
 
 @login_required(login_url='/connextion/')
+def getProduct(request):
+	product= Product.objects.get(id=request.GET.get("id"))
+	data = serializers.serialize('json', [product])
+	return JsonResponse(data, safe=False)
+
+@login_required(login_url='/connextion/')
 def addToCart(request):
 	if request.method == "GET":
 		product = Product.objects.get(id= request.GET.get("id"), active=True)
@@ -93,6 +99,20 @@ def addToCart(request):
 			cart = Cart(user=request.user, product=product)
 			cart.save()
 	return HttpResponse("OK")
+
+@login_required(login_url='/connextion/')
+def removeFromCart(request):
+	cart= Cart.objects.get(id=request.GET.get("id"))
+	cart.delete()
+	return HttpResponse("OK")
+
+@login_required(login_url='/connextion/')
+def updateCart(request):
+	cart= Cart.objects.get(id=request.GET.get("id"))
+	cart.quantity=request.GET.get("quantity")
+	cart.save()
+	return HttpResponse("OK")
+
 
 @login_required(login_url='/connextion/')
 def globalPrice(request):
@@ -196,3 +216,13 @@ def productsPage(request):
 @login_required(login_url='/connextion/')
 def myProductsPage(request):
 	return render(request, "myProducts.html", {})
+
+@login_required(login_url='/connextion/')
+def cartPage(request):
+	return render(request, "cart.html", {})
+
+@login_required(login_url='/connextion/')
+def getCart(request):
+	list= Cart.objects.filter(user=request.user, buyed=False)
+	data = serializers.serialize('json', list)
+	return JsonResponse(data, safe=False)
