@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block blankpage %}
+<div class="maincontent-area">
+    <div class="zigzag-bottom"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+            	{% for cat in categories %}
+            		<button type="button" onclick="p.setCategorie({{ cat.id }})" class="btn btn-primary">{{ cat.name }}</button>
+            	{% endfor %}
+            </div>
+        </div>
+        <div class="row" id="examble_product" style="display: none">
+        	<div class="col-md-3">
+		        <div class="single-product">
+		            <div class="product-f-image">
+		              	<img src="{% static 'files/' %}product.img" style="height: 265px;" >
+		                <div class="product-hover">
+		                    <a href="javascript:void(0)" onclick="c.addToCart('{% url 'addToCart' %}?id=product.id')" class="add-to-cart-link">
+		                        <i class="fa fa-shopping-cart"></i> Add to cart
+		                    </a>
+		                    <a href="{% url 'detailProduct' 0 %}" class="view-details-link"><i class="fa fa-link"></i> See details</a>
+		                </div>
+		            </div>
+		            <h2><a href="single-product.html">product.name</a></h2>
+		            
+		            <div class="product-carousel-price">
+		                <ins>$ product.price</ins>
+		            </div> 
+	        	</div>
+        	</div>
+        </div>
+        <div class="row" style="margin-top: 25px">
+            <div class="col-md-12">
+                <div class="latest-product">
+                    <h2 class="section-title">Products</h2>
+                    <div class="product-carousel" id="products">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <center>
+                	<img  src="{% static 'img/loading.gif' %}" id="loading" width="300px" />
+                	<button id="showmore" type="button" onclick="p.getProducts()" class="btn btn-secondary btn-lg btn-block">Show More</button>
+                </center>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block onready %}
+	p.init(0, '', '', '{% url 'getterProducts' %}', '', '' );
+	p.getProducts();
+{% endblock %}

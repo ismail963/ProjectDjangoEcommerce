@@ -2,7 +2,8 @@ function putMenuActive(){
 	var url=window.location.href;
 	var menu = document.getElementById("menu").getElementsByTagName("li");
 
-	if(url.indexOf("product/new")!=-1) menu[4].className="active";
+	if(url.indexOf("product/new")!=-1) menu[3].className="active";
+	else if(url.indexOf("product/my")!=-1) menu[2].className="active";
 	else if(url.indexOf("product/")!=-1) menu[1].className="active";
 	else menu[0].className="active";
 }
@@ -62,7 +63,7 @@ function Cart(){
 				document.getElementById("cart_number_product").innerHTML=my_text;
 			},
 			error: function(XMLHttpRequest, textStatus, errorThrown) { 
-				alert("Status: " + textStatus+" Error: " + errorThrown); 
+				alert("Status: " + textStatus+" GobalPrice Error: " + errorThrown); 
 			}		
 		});
 	};
@@ -74,12 +75,90 @@ function Product(){
 	this.id;
 	this.url_rating;
 	this.url_comments;
+	this.url_products;
+	this.rm_product;
 	this.all_comments=[];
+	this.products=[];
 	this.comment_page=1;
-	this.init= function(a,b,c) {
+	this.products_page=1;
+	this.id_categorie=-1;
+	this.getMyProducts=false;
+
+	this.init= function(a,b,c,d,e) {
 		this.id=a;
 		this.url_rating=b;
 		this.url_comments=c;
+		this.url_products=d;
+		this.rm_product=e;
+	};
+
+	this.setCategorie=function(id){
+		this.id_categorie=id;
+		this.products_page=1;
+		this.products=[];
+		document.getElementById("products").innerHTML="";
+		this.getProducts();
+	};
+
+	this.getProducts = function(){
+		var obj=this;
+		productsHTML= document.getElementById("products");
+		loading= document.getElementById("loading");
+		loading.style.display="";
+		data="";
+		if(this.id_categorie!=-1)
+			data="page="+this.products_page+"&categorie="+this.id_categorie;
+		else if(this.getMyProducts)
+			data="page="+this.products_page+"&myProduct=1";
+		else
+			data="page="+this.products_page;
+		$.ajax({
+			url: ""+this.url_products,
+			data: data,
+			type: "GET",
+			success: function (my_text) {
+				if(JSON.parse(my_text).length>0) {
+					productsHTML.innerHTML="";
+					obj.products=obj.products.concat(JSON.parse(my_text));
+					for(var i=0;i<obj.products.length;i++){
+						var div= document.getElementById("examble_product").innerHTML;
+						div=div.replace("product.id", obj.products[i].pk);
+						div=div.replace("product.name", obj.products[i].fields.name);
+						div=div.replace("product.price", obj.products[i].fields.price);
+						div=div.replace("product.img", encodeURI(obj.products[i].fields.images.split(";")[0]));
+						div=div.replace("/product/0", "/product/"+obj.products[i].pk);
+						productsHTML.innerHTML+=div;
+						loading.style.display="none";
+					}
+					obj.products_page++;
+				}
+				if(JSON.parse(my_text).length==0 || JSON.parse(my_text).length<25) {
+					loading.style.display="none";
+					document.getElementById("showmore").style.display="none";
+				}
+				
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) { 
+				alert("Status: " + textStatus+" Error: " + errorThrown); 
+			}		
+		});	
+	};
+
+	this.removeProduct= function(id, div){
+		var obj=this;
+		if(confirm("Are you sure you want to delete this product ?")){
+			$.ajax({
+				url: ""+this.rm_product,
+				data: "id="+id,
+				type: "GET",
+				success: function (my_text) {
+					div.innerHTML="Removed";
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) { 
+					alert("Status: " + textStatus+" Error: " + errorThrown); 
+				}		
+			});
+		}
 	};
 
 	this.setRatingValue=function(url){
@@ -114,7 +193,7 @@ function Product(){
 				}
 			},
 			error: function(XMLHttpRequest, textStatus, errorThrown) { 
-				alert("Status: " + textStatus+" Error: " + errorThrown); 
+				alert("Status: " + textStatus+" Reviews Error: " + errorThrown); 
 			}		
 		});		
 	};
@@ -142,7 +221,7 @@ function Product(){
 				else document.getElementById("comment_showmore").style.display="none";
 			},
 			error: function(XMLHttpRequest, textStatus, errorThrown) { 
-				alert("Status: " + textStatus+" Error: " + errorThrown); 
+				alert("Status: " + textStatus+" Comments Error: " + errorThrown); 
 			}		
 		});
 	};

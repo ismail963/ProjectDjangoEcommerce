@@ -6,6 +6,7 @@ from models import Categorie, Product, Cart, RatingProduct, CommentProduct
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.decorators import login_required
+from django.core import serializers
 import time
 
 # Create your views here.
@@ -77,12 +78,13 @@ def addProduct(request):
 def detailProduct(request, id):
 	product= Product.objects.get(id=id)
 	product.images=product.images.split(";")
-	return render(request, "detailProduct.html", { "product" : product })
+	buyed_by = Cart.objects.filter(product=product, buyed=True).count();
+	return render(request, "detailProduct.html", { "product" : product, "buyedBy" : buyed_by })
 
 @login_required(login_url='/connextion/')
 def addToCart(request):
 	if request.method == "GET":
-		product = Product.objects.get(id= request.GET.get("id"))
+		product = Product.objects.get(id= request.GET.get("id"), active=True)
 		if Cart.objects.filter(user=request.user, product=product).count()>0:
 			cart= Cart.objects.get(user=request.user, product=product)
 			cart.quantity+=1
@@ -122,17 +124,27 @@ def ratingProduct(request, id_product, rating):
 	return HttpResponse("OK")
 
 @login_required(login_url='/connextion/')
-def ProductReview(request, id_product):
+def productReview(request, id_product):
 	product = Product.objects.get(id=id_product)
 	list =RatingProduct.objects.filter(product=product)
 	number=0
 	for l in list:
 		number+=l.like
-	number=number//list.count()
+	if list.count()>0:
+		number=number//list.count()
 	return HttpResponse(number)
 
 @login_required(login_url='/connextion/')
-def Comments(request):
+def removeProduct(request):
+	product = Product.objects.get(id=request.GET.get("id"))
+	if product.owner==request.user:
+		product.active=False
+		product.save()
+	return HttpResponse("OK")
+
+
+@login_required(login_url='/connextion/')
+def comments(request):
 	product = Product.objects.get(id=request.GET.get("id"))
 	if request.GET.get("comments"):
 		page=int(request.GET.get("comments"))-1
@@ -152,3 +164,26 @@ def Comments(request):
 		comment.save()
 		return HttpResponse("OK")
 
+@login_required(login_url='/connextion/')
+def getProducts(request):
+	products=""
+	page=int(request.GET.get("page"))-1
+	if request.GET.get("categorie"):
+		categorie = Categorie.objects.get(id=request.GET.get("categorie"))
+		products = Product.objects.filter(categorie=categorie, active=True).order_by('-id')[(page*25):((page+1)*25)]
+	elif request.GET.get("myProduct"):
+		products = Product.objects.filter(owner=request.user, active=True).order_by('-id')[(page*25):((page+1)*25)]
+	else:
+		products = Product.objects.filter(active=True).order_by('-id')[(page*25):((page+1)*25)]
+
+	data = serializers.serialize('json', products)
+	return JsonResponse(data, safe=False)
+
+@login_required(login_url='/connextion/')
+def productsPage(request):
+	categories = Categorie.objects.all()
+	return render(request, "products.html", { "categories" : categories })
+
+@login_required(login_url='/connextion/')
+def myProductsPage(request):
+	return render(request, "myProducts.html", {})

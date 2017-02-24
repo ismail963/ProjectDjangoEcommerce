@@ -14,6 +14,7 @@ class Product(models.Model):
     description = models.TextField(null=True)
     price =  models.DecimalField(max_digits=12, decimal_places=2)
     adding_date = models.DateTimeField(auto_now_add=True)
+    active = models.BooleanField(default=True)
     categorie = models.ForeignKey('Categorie')
     def __str__(self):
         return "Product {0}".format(self.name)

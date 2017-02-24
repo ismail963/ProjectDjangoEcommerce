@@ -104,9 +104,8 @@
                     <div class="navbar-collapse collapse">
                         <ul class="nav navbar-nav" id="menu">
                             <li><a href="{% url 'home' %}">Home</a></li>
-                            <li><a href="shop.html">Shop page</a></li>
-                            <li><a href="#">Category</a></li>
-                            <li><a href="cart.html">My products</a></li>
+                            <li><a href="{% url 'products' %}">Shop page</a></li>
+                            <li><a href="{% url 'myProducts' %}">My products</a></li>
                             <li><a href="{% url 'addProduct' %}">Add product</a></li>
                             <li><a href="checkout.html">Checkout</a></li>
                             <li><a href="#">Contact-us</a></li>

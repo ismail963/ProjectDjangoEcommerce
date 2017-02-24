@@ -11,7 +11,7 @@
     						{% if image != "" %}
 	    					<li>
 	    						{% with 'files/'|add:image as image_static %}
-	    							<img src="{% static image_static %}" style="width:500px" alt="{{ product.name }}">
+	    							<img src="{% static image_static %}" style="width:500px; margin-left: -250px" alt="{{ product.name }}">
 	    						{% endwith %}
 	    					</li>
 	    					{% endif %}
@@ -19,7 +19,10 @@
     				</ul>
 			  		<div class="caption-group">
 					 	<h2 class="caption title">
-							<span class="primary"><strong>{{ product.name }}</strong></span>
+							<span class="primary"><strong>{{ product.name }}</strong></span><br/>
+							{% if buyedBy > 0 %}
+								<small>Already {{ buyedBy }} pieces bought</small>  
+							{% endif %}
 							<center id="ProductReview">
 								<i class="fa fa-star-o"></i>
 								<i class="fa fa-star-o"></i>
@@ -133,7 +136,7 @@
 {% endblock %}
 
 {% block onready %}
-	p.init({{ product.id }}, '{% url 'ProductReview' product.id %}', '{% url 'Comments' %}' );
+	p.init({{ product.id }}, '{% url 'ProductReview' product.id %}', '{% url 'Comments' %}', '', '' );
 	p.getRatingForProduct();
 	p.getCommentsProduct();
 {% endblock %}
