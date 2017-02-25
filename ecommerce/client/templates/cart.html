@@ -4,7 +4,14 @@
 <div class="maincontent-area">
     <div class="zigzag-bottom"></div>
     <div class="container">
-        <div class="row">
+    	<div class="row" id="thankyou" style="display:none">
+    		<div class="col-md-12">
+    			<center>
+    				<img src="{% static 'img/thank-you.jpg' %}" />
+    			</center>
+    		</div>
+    	</div>
+        <div class="row" id="cart">
                 <div class="col-md-12">
                     <div class="product-content-right">
                         <div class="woocommerce">
@@ -52,7 +59,9 @@
                                         </tr>
                                     </tbody>
                                 </table><br/>
-                                <input type="button" onclick="" value="Buy" class="btn btn-primary btn-lg" style="margin-left: 85%;">
+                                <a href="javascript:void(0)" id="buy" onclick="c.buy()" style="display:none; margin-left: 80%;" class="btn btn-primary btn-lg">
+                                	<i class="fa fa-shopping-cart" aria-hidden="true"></i> Buy
+                                </a>
                             </div>
                           </div>
                         </div>                        
@@ -109,5 +118,6 @@
     c.url_cart='{% url 'getterCart' %}';
     c.url_rm_from_cart='{% url 'rmFromCart' %}';
 	c.url_update_cart='{% url 'updateCart' %}';
+	c.url_buy='{% url 'buy' %}';
     c.getCart();
 {% endblock %}

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load mathfilters %}
+{% block blankpage %}
+<div class="maincontent-area">
+    <div class="zigzag-bottom"></div>
+    <div class="container">
+    	<div class="row" id="thankyou" style="display:none">
+    		<div class="col-md-12">
+    			<center>
+    				<img src="{% static 'img/thank-you.jpg' %}" />
+    			</center>
+    		</div>
+    	</div>
+        <div class="row" id="cart">
+                <div class="col-md-12">
+                    <div class="product-content-right">
+                        <div class="woocommerce">
+                            <form method="post" action="#">
+                                {% if carts.count > 0 %}
+                                    <table cellspacing="0" class="shop_table cart">
+                                        <thead>
+                                            <tr>
+                                                <th class="product-thumbnail">&nbsp;</th>
+                                                <th class="product-name">Product</th>
+                                                <th class="product-price">Price</th>
+                                                <th class="product-quantity">Quantity</th>
+                                                <th class="product-subtotal">Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="products">
+                                            {% for cart in carts %}
+                                                <tr class="cart_item">
+                                                    <td class="product-thumbnail">
+                                                        <a href="{% url 'detailProduct' cart.product.id %}">
+                                                            {% with 'files/'|add:cart.product.images.0 as image_static %}
+                                                                <img width="145" height="145" alt="poster_1_up" class="shop_thumbnail" src="{% static image_static %}">
+                                                            {% endwith %}
+                                                        </a>
+                                                    </td>
+
+                                                    <td class="product-name">
+                                                        <a href="{% url 'detailProduct' cart.product.id %}" target="_blank">{{ cart.product.name }}</a> 
+                                                    </td>
+
+                                                    <td class="product-price">
+                                                        <span class="amount">${{ cart.product.price }}</span> 
+                                                    </td>
+
+                                                    <td class="product-quantity">
+                                                        {{ cart.quantity }}
+                                                    </td>
+
+                                                    <td class="product-subtotal">
+                                                        <span class="amount">${{ cart.product.price|mul:cart.quantity }}</span> 
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                {% else %}
+                                    <center>
+                                        <img src="{% static 'img/nb.jpg' %}" />
+                                    </center>
+                                {% endif %}
+                            </form>
+
+
+                        </div>                        
+                    </div>                    
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

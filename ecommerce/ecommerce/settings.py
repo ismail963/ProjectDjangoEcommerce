@@ -37,6 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'mathfilters',
     'client',
 )
 
@@ -114,3 +115,10 @@ STATICFILES_DIRS = (
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/files')
+
+# pour gmail et google aps
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'parsimony.score@gmail.com'
+EMAIL_HOST_PASSWORD = 'parsimony.123456'
+EMAIL_PORT = 587

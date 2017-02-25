@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block blankpage %}
+
+<div class="maincontent-area">
+    <div class="zigzag-bottom"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+            	<h2>My account</h2>
+				 <form action="{% url 'acount' %}" method="post">
+				 	{% csrf_token %} 
+					<div class="form-group">
+						<label for="name">First name:</label>
+						<input type="text" class="form-control" name="firstname" value="{{ user.first_name }}" required>
+					</div>
+					<div class="form-group">
+						<label for="name">Last name:</label>
+						<input type="text" class="form-control" name="lastname" value="{{ user.last_name }}" required>
+					</div>
+					<div class="form-group">
+						<label for="name">E-mail:</label>
+						<input type="text" class="form-control" name="email" value="{{ user.email }}" required>
+					</div>
+					<button type="submit" class="btn btn-default">OK</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}

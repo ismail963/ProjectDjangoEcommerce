@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block blankpage %}
+
+<div class="maincontent-area">
+    <div class="zigzag-bottom"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+            	<h2>Contact-us</h2>
+				 <form action="{% url 'contactUs' %}" method="post" enctype="multipart/form-data">
+				 	{% csrf_token %} 
+					<div class="form-group">
+						<label for="name">Objet:</label>
+						<input type="text" class="form-control" id="name" name="objet" required>
+					</div>
+					<div class="form-group">
+						<label for="desc">Message</label>
+						<textarea class="form-control" name="message" id="desc" required></textarea>
+					</div>
+					<button type="submit" class="btn btn-default">Send</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}

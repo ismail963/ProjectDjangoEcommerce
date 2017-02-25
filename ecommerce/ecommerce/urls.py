@@ -34,12 +34,18 @@ urlpatterns = [
 	url(r'^product/modify$', 'client.views.updateProduct', name='modifyProduct'),
 
 	url(r'^cart/all', 'client.views.cartPage', name='cart'),
+	url(r'^cart/bought', 'client.views.boughtCart', name='boughtCart'),
 	url(r'^cart/get', 'client.views.getCart', name='getterCart'),
 	url(r'^cart/new', 'client.views.addToCart', name='addToCart'),
 	url(r'^cart/remove', 'client.views.removeFromCart', name='rmFromCart'),
 	url(r'^cart/update', 'client.views.updateCart', name='updateCart'),
+	url(r'^cart/buy', 'client.views.buyCart', name='buy'),
 	url(r'^cart/globalPrice', 'client.views.globalPrice', name='globalPrice'),
 	url(r'^cart/globalNumber', 'client.views.globalNumberProduct', name='globalNumberProduct'),
+
+	url(r'^contact/', 'client.views.contactUs', name='contactUs'),
+	url(r'^myaccount/', 'client.views.account', name='acount'),
+
 
     url(r'^admin/', include(admin.site.urls)),
 ]

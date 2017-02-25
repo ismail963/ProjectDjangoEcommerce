@@ -1,12 +1,14 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, render_to_response
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, Http404
 from django.contrib.auth.models import User, Group
 from models import Categorie, Product, Cart, RatingProduct, CommentProduct
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
+from django.core.mail import send_mail
+from django.template import RequestContext
 import time
 
 # Create your views here.
@@ -35,8 +37,8 @@ def cnx(request):
 def signUp(request):
 	if request.method == "POST":
 		user = User.objects.create_user(username=request.POST.get("username"), password=request.POST.get("password"))
-		user.firstname=request.POST.get("firstname")
-		user.lastname=request.POST.get("lastname")
+		user.first_name=request.POST.get("firstname")
+		user.last_name=request.POST.get("lastname")
 		user.groups.add(Group.objects.get(name="client"))
 		user.save()
 		user = authenticate(username=request.POST.get("username"), password=request.POST.get("password"))
@@ -50,6 +52,18 @@ def signUp(request):
 def logoutFromSite(request):
 	logout(request)
 	return redirect(home)
+
+@login_required(login_url='/connextion/')
+def account(request):
+	if request.method == "POST":
+		user = User.objects.get(id=request.user.id)
+		user.first_name=request.POST.get("firstname")
+		user.last_name=request.POST.get("lastname")
+		user.email=request.POST.get("email")
+		user.save()
+		return redirect(account)
+	else:
+		return render(request, "acount.html", {})
 
 @login_required(login_url='/connextion/')
 def addProduct(request):
@@ -76,10 +90,13 @@ def addProduct(request):
 
 @login_required(login_url='/connextion/')
 def detailProduct(request, id):
-	product= Product.objects.get(id=id)
-	product.images=product.images.split(";")
-	buyed_by = Cart.objects.filter(product=product, buyed=True).count();
-	return render(request, "detailProduct.html", { "product" : product, "buyedBy" : buyed_by })
+	try:
+		product= Product.objects.get(id=id)
+		product.images=product.images.split(";")
+		buyed_by = Cart.objects.filter(product=product, buyed=True).count();
+		return render(request, "detailProduct.html", { "product" : product, "buyedBy" : buyed_by })
+	except Product.DoesNotExist:
+		raise Http404
 
 @login_required(login_url='/connextion/')
 def getProduct(request):
@@ -113,6 +130,20 @@ def updateCart(request):
 	cart.save()
 	return HttpResponse("OK")
 
+@login_required(login_url='/connextion/')
+def buyCart(request):
+	list= Cart.objects.filter(user=request.user, buyed=False)
+	for l in list:
+		l.buyed=True
+		l.save()
+	return HttpResponse("OK")
+
+@login_required(login_url='/connextion/')
+def boughtCart(request):
+	list= Cart.objects.filter(user=request.user, buyed=True)
+	for l in list:
+		l.product.images=l.product.images.split(";")
+	return render(request, "boughtProduct.html", { "carts": list })
 
 @login_required(login_url='/connextion/')
 def globalPrice(request):
@@ -209,6 +240,12 @@ def getProducts(request):
 	return JsonResponse(data, safe=False)
 
 @login_required(login_url='/connextion/')
+def getCart(request):
+	list= Cart.objects.filter(user=request.user, buyed=False)
+	data = serializers.serialize('json', list)
+	return JsonResponse(data, safe=False)
+
+@login_required(login_url='/connextion/')
 def productsPage(request):
 	categories = Categorie.objects.all()
 	return render(request, "products.html", { "categories" : categories })
@@ -222,7 +259,21 @@ def cartPage(request):
 	return render(request, "cart.html", {})
 
 @login_required(login_url='/connextion/')
-def getCart(request):
-	list= Cart.objects.filter(user=request.user, buyed=False)
-	data = serializers.serialize('json', list)
-	return JsonResponse(data, safe=False)
+def contactUs(request):
+	if request.method == "POST":
+		admin = User.objects.get(username='etudiant')
+		message= "Sent By :"+request.user.username+"\n"
+		message+= "Email :"+request.user.email+"\n"
+		message+="To you By UStora...\n"
+		message+=request.POST.get("message")
+
+		send_mail(
+			request.POST.get("objet"),
+			message,
+			settings.EMAIL_HOST_USER,   
+			[ admin.email ],
+			fail_silently=True,
+		)
+		return redirect(home)
+	else:
+		return render(request, "contact-us.html", {})

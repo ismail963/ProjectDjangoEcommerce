@@ -28,7 +28,7 @@ class Cart(models.Model):
 	adding_date=models.DateTimeField(auto_now_add=True)
 	buyed_date=models.DateTimeField(auto_now=True)
 	def __str__(self):
-		return self.user
+		return self.user.username
 
 class RatingProduct(models.Model):
 	product = models.ForeignKey(Product) 

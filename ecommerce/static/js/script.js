@@ -14,6 +14,7 @@ function Cart(){
 	this.url_globalPrice="";
 	this.url_numberProduct="";
 	this.url_cart="";
+	this.url_buy="";
 	this.url_rm_from_cart="";
 	this.url_update_cart="";
 	this.all_products=[];
@@ -104,6 +105,7 @@ function Cart(){
 					}
 					products.innerHTML+=plus;
 					document.getElementById("loading").style.display="none";
+					if(obj.all_products.length>0) document.getElementById("buy").style.display="unset";
 				}, 2000);
 			},
 			error: function(XMLHttpRequest, textStatus, errorThrown) { 
@@ -160,6 +162,20 @@ function Cart(){
 			});
 		}
 		else alert("ERROR: value is an number > 0");
+	};
+
+	this.buy= function(){
+		$.ajax({
+			url: ""+this.url_buy,
+			type: "GET",
+			success: function (my_text) {
+				document.getElementById("thankyou").style.display="";
+				document.getElementById("cart").style.display="none";
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) { 
+				alert("Status: " + textStatus+" GobalPrice Error: " + errorThrown); 
+			}		
+		});
 	};
 
 }
