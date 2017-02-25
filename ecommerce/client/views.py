@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, render_to_response
+from .forms import signUpForm, cnxForm, updateAccountForm, contactUsForm
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, JsonResponse, Http404
 from django.contrib.auth.models import User, Group
@@ -22,31 +23,33 @@ def home(request):
 		}
 		return render(request, "home.html", context)
 	else:
-		return render(request, "login.html", {})
+		return redirect(signUp)
 
 def cnx(request):
-	if request.method == "POST":
-		user = authenticate(username=request.POST.get("username"), password=request.POST.get("password"))
+	form = cnxForm(request.POST or None)
+	if form.is_valid():
+		user = authenticate(username=form.cleaned_data["username"], password=form.cleaned_data["password"])
  		if user: 
 			login(request, user)
 			return redirect(home)
 
     	else:
-    		return render(request, "login.html", {})
+    		return render(request, "login.html", {"form": form })
 
 def signUp(request):
-	if request.method == "POST":
-		user = User.objects.create_user(username=request.POST.get("username"), password=request.POST.get("password"))
-		user.first_name=request.POST.get("firstname")
-		user.last_name=request.POST.get("lastname")
+	form = signUpForm(request.POST or None)
+	if form.is_valid():
+		user = User.objects.create_user(username=form.cleaned_data["username"], password=form.cleaned_data["password"])
+		user.first_name=form.cleaned_data["firstname"]
+		user.last_name=form.cleaned_data["lastname"]
+		user.email=form.cleaned_data["email"]
 		user.groups.add(Group.objects.get(name="client"))
 		user.save()
-		user = authenticate(username=request.POST.get("username"), password=request.POST.get("password"))
+		user = authenticate(username=form.cleaned_data["username"], password=form.cleaned_data["password"])
  		if user: 
 			login(request, user)
 			return redirect(home)
-    	else:
-    		return render(request, "login.html", {})	
+	return render(request, "login.html", {"form": form })	
 
 @login_required(login_url='/connextion/')
 def logoutFromSite(request):
@@ -55,15 +58,16 @@ def logoutFromSite(request):
 
 @login_required(login_url='/connextion/')
 def account(request):
-	if request.method == "POST":
+	form = updateAccountForm(request.POST or None)
+	if form.is_valid():
 		user = User.objects.get(id=request.user.id)
-		user.first_name=request.POST.get("firstname")
-		user.last_name=request.POST.get("lastname")
-		user.email=request.POST.get("email")
+		user.first_name=form.cleaned_data["firstname"]
+		user.last_name=form.cleaned_data["lastname"]
+		user.email=form.cleaned_data["email"]
 		user.save()
 		return redirect(account)
 	else:
-		return render(request, "acount.html", {})
+		return render(request, "acount.html", { "form": form })
 
 @login_required(login_url='/connextion/')
 def addProduct(request):
@@ -260,15 +264,16 @@ def cartPage(request):
 
 @login_required(login_url='/connextion/')
 def contactUs(request):
-	if request.method == "POST":
+	form = contactUsForm(request.POST or None)
+	if form.is_valid():
 		admin = User.objects.get(username='etudiant')
 		message= "Sent By :"+request.user.username+"\n"
 		message+= "Email :"+request.user.email+"\n"
 		message+="To you By UStora...\n"
-		message+=request.POST.get("message")
+		message+=form.cleaned_data["message"]
 
 		send_mail(
-			request.POST.get("objet"),
+			form.cleaned_data["objet"],
 			message,
 			settings.EMAIL_HOST_USER,   
 			[ admin.email ],
@@ -276,4 +281,4 @@ def contactUs(request):
 		)
 		return redirect(home)
 	else:
-		return render(request, "contact-us.html", {})
+		return render(request, "contact-us.html", { "form": form })
