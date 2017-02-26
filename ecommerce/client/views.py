@@ -112,8 +112,8 @@ def getProduct(request):
 def addToCart(request):
 	if request.method == "GET":
 		product = Product.objects.get(id= request.GET.get("id"), active=True)
-		if Cart.objects.filter(user=request.user, product=product).count()>0:
-			cart= Cart.objects.get(user=request.user, product=product)
+		if Cart.objects.filter(user=request.user, product=product, buyed=False).count()>0:
+			cart= Cart.objects.get(user=request.user, product=product, buyed=False)
 			cart.quantity+=1
 			cart.save()
 		else:

@@ -18,4 +18,4 @@ class updateAccountForm(forms.Form):
 
 class contactUsForm(forms.Form):
 	objet= forms.CharField(max_length=255)
-	massage= forms.CharField(widget=forms.Textarea)
+	message= forms.CharField(widget=forms.Textarea)
