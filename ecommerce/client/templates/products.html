@@ -10,6 +10,17 @@
             		<button type="button" onclick="p.setCategorie({{ cat.id }})" class="btn btn-primary">{{ cat.name }}</button>
             	{% endfor %}
             </div>
+        </div><br/><br/>
+        <div class="row">
+            <div class="col-md-4">
+                 <div class="single-sidebar">
+                        <h2 class="sidebar-title">Search Products</h2>
+                        <form action="">
+                            <input type="text" placeholder="Search products..." id="shearch" >
+                            <input type="button" onclick="p.shearch()" class="btn btn-primary" value="Search">
+                        </form>
+                </div>
+            </div>
         </div>
         <div class="row" id="examble_product" style="display: none">
         	<div class="col-md-3">

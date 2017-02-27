@@ -14,12 +14,13 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from . import views
 
 urlpatterns = [
-	url(r'^$', 'client.views.home', name='home'),
-	url(r'^connextion/', 'client.views.cnx', name='cnx'),
-	url(r'^signup/', 'client.views.signUp', name='signUp'),
-	url(r'^logout$', 'client.views.logoutFromSite', name='logoutFromSite'),
+	url(r'^$', views.home, name='home'),
+	url(r'^connextion/', views.cnx, name='cnx'),
+	url(r'^signup/', views.signUp, name='signUp'),
+	url(r'^logout$', views.logoutFromSite, name='logoutFromSite'),
 
 	url(r'^product/new', 'client.views.addProduct', name='addProduct'),
 	url(r'^product/select', 'client.views.getProduct', name='getProduct'),

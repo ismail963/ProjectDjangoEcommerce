@@ -189,6 +189,7 @@ function Product(){
 	this.rm_product;
 	this.all_comments=[];
 	this.products=[];
+	this.shearch_word="";
 	this.comment_page=1;
 	this.products_page=1;
 	this.id_categorie=-1;
@@ -222,6 +223,12 @@ function Product(){
 			data="page="+this.products_page+"&myProduct=1";
 		else
 			data="page="+this.products_page;
+
+		if(this.shearch_word!=""){
+			data+="&shearch="+this.shearch_word;
+		}
+
+		alert(data);
 		$.ajax({
 			url: ""+this.url_products,
 			data: data,
@@ -253,6 +260,20 @@ function Product(){
 				alert("Status: " + textStatus+" getProducts Error: " + errorThrown); 
 			}		
 		});	
+	};
+
+	this.shearch =function(){
+		var search= document.getElementById("shearch").value;
+		if(search==""){
+			this.shearch_word="";
+		}
+		else if(search!=this.shearch_word) {
+			this.shearch_word=search;
+			this.products_page=1;
+			this.products=[];
+			document.getElementById("products").innerHTML="";
+			this.getProducts();	
+		}
 	};
 
 	this.removeProduct= function(id, div){

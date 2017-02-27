@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, render_to_response
-from .forms import signUpForm, cnxForm, updateAccountForm, contactUsForm
+from .forms import updateAccountForm, contactUsForm
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, JsonResponse, Http404
 from django.contrib.auth.models import User, Group
@@ -10,51 +10,9 @@ from django.contrib.auth.decorators import login_required
 from django.core import serializers
 from django.core.mail import send_mail
 from django.template import RequestContext
+from ecommerce.views import home
 import time
 
-# Create your views here.
-def home(request):
-	if request.user.is_authenticated():
-		last_products= Product.objects.all().order_by('-id')[:7]  
-		for pr in last_products:
-			pr.images=pr.images.split(";")
-		context={
-			"last_products" : last_products
-		}
-		return render(request, "home.html", context)
-	else:
-		return redirect(signUp)
-
-def cnx(request):
-	form = cnxForm(request.POST or None)
-	if form.is_valid():
-		user = authenticate(username=form.cleaned_data["username"], password=form.cleaned_data["password"])
- 		if user: 
-			login(request, user)
-			return redirect(home)
-
-    	else:
-    		return render(request, "login.html", {"form": form })
-
-def signUp(request):
-	form = signUpForm(request.POST or None)
-	if form.is_valid():
-		user = User.objects.create_user(username=form.cleaned_data["username"], password=form.cleaned_data["password"])
-		user.first_name=form.cleaned_data["firstname"]
-		user.last_name=form.cleaned_data["lastname"]
-		user.email=form.cleaned_data["email"]
-		user.groups.add(Group.objects.get(name="client"))
-		user.save()
-		user = authenticate(username=form.cleaned_data["username"], password=form.cleaned_data["password"])
- 		if user: 
-			login(request, user)
-			return redirect(home)
-	return render(request, "login.html", {"form": form })	
-
-@login_required(login_url='/connextion/')
-def logoutFromSite(request):
-	logout(request)
-	return redirect(home)
 
 @login_required(login_url='/connextion/')
 def account(request):
@@ -232,9 +190,15 @@ def comments(request):
 def getProducts(request):
 	products=""
 	page=int(request.GET.get("page"))-1
-	if request.GET.get("categorie"):
-		categorie = Categorie.objects.get(id=request.GET.get("categorie"))
-		products = Product.objects.filter(categorie=categorie, active=True).order_by('-id')[(page*25):((page+1)*25)]
+	if request.GET.get("categorie") or request.GET.get("shearch"):
+		if request.GET.get("categorie") and request.GET.get("shearch"):
+			categorie = Categorie.objects.get(id=request.GET.get("categorie"))
+			products = Product.objects.filter(name__contains=request.GET.get("shearch"), categorie=categorie, active=True).order_by('-id')[(page*25):((page+1)*25)]
+		elif request.GET.get("categorie"):
+			categorie = Categorie.objects.get(id=request.GET.get("categorie"))
+			products = Product.objects.filter(categorie=categorie, active=True).order_by('-id')[(page*25):((page+1)*25)]
+		else:
+			products = Product.objects.filter(name__contains=request.GET.get("shearch"), active=True).order_by('-id')[(page*25):((page+1)*25)]
 	elif request.GET.get("myProduct"):
 		products = Product.objects.filter(owner=request.user, active=True).order_by('-id')[(page*25):((page+1)*25)]
 	else:
